@@ -52,10 +52,6 @@ export default class API {
       `https://api.tracker.gg/api/v2/valorant/standard/profile/riot/${username}%23${tag}/segments/weapon`
     )
 
-    api._raw.matchs = await this.request(
-      `https://api.tracker.gg/api/v2/valorant/standard/matches/riot/${username}%23${tag}?type=competitive`
-    )
-
     api._raw.maps = await this.request(
       `https://api.tracker.gg/api/v2/valorant/standard/profile/riot/${username}%23${tag}/segments/map`
     )
@@ -65,22 +61,9 @@ export default class API {
     if (api._raw.weapons.errors)
       throw new Error(api._raw.weapons.errors[0].message)
 
-    if (api._raw.matchs.errors)
-      throw new Error(api._raw.matchs.errors[0].message)
-
     if (api._raw.maps.errors) throw new Error(api._raw.maps.errors[0].message)
 
     return api
-  }
-
-  static async getMatchInfo(uuid: string) {
-    const matchInfo = await this.request(
-      `https://api.tracker.gg/api/v2/valorant/standard/matches/${uuid}`
-    )
-
-    if (matchInfo.errors) return 'error'
-
-    return matchInfo
   }
 
   info() {
