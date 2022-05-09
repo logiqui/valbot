@@ -13,6 +13,9 @@ interface InfoDTO {
   rank: string
   peakRank: string
   ranked: any
+  deathmatch: any
+  segments: any
+  weapons: any
 }
 
 export default class API {
@@ -43,6 +46,10 @@ export default class API {
       `https://api.tracker.gg/api/v2/valorant/standard/profile/riot/${username}%23${tag}`
     )
 
+    api._raw.weapons = await this.request(
+      `https://api.tracker.gg/api/v2/valorant/standard/profile/riot/${username}%23${tag}/segments/weapon`
+    )
+
     if (api._raw.errors) throw new Error(api._raw.errors[0].message)
 
     return api
@@ -52,6 +59,9 @@ export default class API {
     const platform = this._raw.data.platformInfo
     const ranked = this._raw.data.segments.find(
       (x: any) => x.attributes?.key == 'competitive' && x.type == 'playlist'
+    )
+    const deathmatch = this._raw.data.segments.find(
+      (x: any) => x.attributes?.key == 'deathmatch' && x.type == 'playlist'
     )
 
     const currentRank = ranked.stats.rank
@@ -66,7 +76,10 @@ export default class API {
       tierName: currentRank.metadata.tierName,
       rank: `${currentRank.metadata.tierName} - ${currentRank.value}RR`,
       peakRank: `${peakRank.metadata.tierName} - ${peakRank.value}RR`,
-      ranked: ranked.stats
+      ranked: ranked.stats,
+      deathmatch: deathmatch.stats,
+      segments: this._raw.data.segments,
+      weapons: this._raw.weapons.data
     }
 
     return result
