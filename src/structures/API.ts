@@ -17,7 +17,7 @@ interface InfoDTO {
   segments: any
   weapons: any
   maps: any
-  matchs: any
+  matches: any
 }
 
 export default class API {
@@ -52,6 +52,10 @@ export default class API {
       `https://api.tracker.gg/api/v2/valorant/standard/profile/riot/${username}%23${tag}/segments/weapon`
     )
 
+    api._raw.matches = await this.request(
+      `https://api.tracker.gg/api/v2/valorant/standard/matches/riot/${username}%23${tag}?type=competitive`
+    )
+
     api._raw.maps = await this.request(
       `https://api.tracker.gg/api/v2/valorant/standard/profile/riot/${username}%23${tag}/segments/map`
     )
@@ -60,6 +64,9 @@ export default class API {
 
     if (api._raw.weapons.errors)
       throw new Error(api._raw.weapons.errors[0].message)
+
+    if (api._raw.matches.errors)
+      throw new Error(api._raw.matches.errors[0].message)
 
     if (api._raw.maps.errors) throw new Error(api._raw.maps.errors[0].message)
 
@@ -92,7 +99,7 @@ export default class API {
       segments: this._raw.data.segments,
       weapons: this._raw.weapons.data,
       maps: this._raw.maps.data,
-      matchs: this._raw.matchs.data.matches
+      matches: this._raw.matches.data.matches
     }
 
     return result

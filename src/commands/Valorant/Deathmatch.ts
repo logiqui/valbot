@@ -1,7 +1,7 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 import Client from '../../Client'
-import API from '../../components/API'
+import API from '../../structures/API'
 import { ErrorEmbed } from '../../components/Embeds'
 import Command from '../../structures/Command'
 import Users from '../../structures/database/entities/User'
@@ -32,14 +32,16 @@ export default class DeathmatchStatus extends Command {
         discordId: interaction.user.id
       })
 
-      if (userAccount.length < 1) {
-        return await interaction.reply({
-          embeds: [ErrorEmbed],
-          ephemeral: true
-        })
-      }
+      if (!riotId) {
+        if (userAccount.length < 1) {
+          return await interaction.reply({
+            embeds: [ErrorEmbed],
+            ephemeral: true
+          })
+        }
 
-      if (!riotId) riotId = userAccount[0].riotId
+        riotId = userAccount[0].riotId
+      }
 
       if (riotId.includes('@')) {
         try {
