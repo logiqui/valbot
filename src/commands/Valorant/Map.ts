@@ -65,14 +65,6 @@ export default class DeathmatchStatus extends Command {
       const userInfo = user.info()
       const mapStats = userInfo.maps
 
-      const author = {
-        name: userInfo.name,
-        iconURL: userInfo.avatar,
-        url: `https://tracker.gg/valorant/profile/riot/${encodeURI(
-          userInfo.name
-        )}/overview`
-      }
-
       const mapInfo = []
       for (let i = 0; i < mapStats.length; i++) {
         if (i != 4) {
@@ -87,6 +79,14 @@ export default class DeathmatchStatus extends Command {
             mapStats[i].stats.matchesWinPct.displayValue
           ])
         }
+      }
+
+      const author = {
+        name: userInfo.name,
+        iconURL: userInfo.avatar,
+        url: `https://tracker.gg/valorant/profile/riot/${encodeURI(
+          userInfo.name
+        )}/overview`
       }
 
       const mapEmbed = new MessageEmbed()
@@ -118,7 +118,7 @@ export default class DeathmatchStatus extends Command {
 
         let mapEmoji = '▫️'
         if (availableEmojis.includes(mapName))
-          mapEmoji = this.client.utils.getEmojiName(assets.mapEmojis, mapName)
+          mapEmoji = this.client.utils.getEmoji(assets.mapEmojis, mapName)
 
         mapEmbed.addFields({
           name:

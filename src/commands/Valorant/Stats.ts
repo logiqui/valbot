@@ -101,7 +101,7 @@ export default class AccountStats extends Command {
               inline: true
             },
             {
-              name: `Rank ${this.client.utils.getEmojiName(
+              name: `Rank ${this.client.utils.getEmoji(
                 assets.rankEmojis,
                 userInfo.tierName
               )}`,

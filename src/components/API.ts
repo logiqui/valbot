@@ -73,6 +73,16 @@ export default class API {
     return api
   }
 
+  static async getMatchInfo(uuid: string) {
+    const matchInfo = await this.request(
+      `https://api.tracker.gg/api/v2/valorant/standard/matches/${uuid}`
+    )
+
+    if (matchInfo.errors) return 'error'
+
+    return matchInfo
+  }
+
   info() {
     const platform = this._raw.data.platformInfo
     const ranked = this._raw.data.segments.find(

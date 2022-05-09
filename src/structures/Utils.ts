@@ -81,7 +81,7 @@ export default class Utils {
     return args.join(' ')
   }
 
-  getEmojiName(obj: any, value: string) {
+  getEmoji(obj: any, value: string) {
     const index = Object.keys(obj).find((key: any) => key === value)
     return obj[index!].emoji
   }

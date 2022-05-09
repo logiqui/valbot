@@ -143,10 +143,7 @@ export default class DeathmatchStatus extends Command {
 
         let agentEmoji = ':white_small_square:'
         if (availableEmojis.includes(agentName))
-          agentEmoji = this.client.utils.getEmojiName(
-            assets.agentEmojis,
-            agentName
-          )
+          agentEmoji = this.client.utils.getEmoji(assets.agentEmojis, agentName)
 
         agentEmbed.addFields({
           name:
