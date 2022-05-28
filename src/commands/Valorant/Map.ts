@@ -1,7 +1,6 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 import Client from '../../Client'
-import API from '../../structures/API'
 import { ErrorEmbed } from '../../components/Embeds'
 
 import assets from '../../../assets.json'
@@ -61,27 +60,8 @@ export default class DeathmatchStatus extends Command {
         }
       }
 
-      const playerId = riotId.split('#')
-      const user = await API.getUser(playerId[0], playerId[1])
-
-      const userInfo = user.info()
-      const mapStats = userInfo.maps
-
-      const mapInfo = []
-      for (let i = 0; i < mapStats.length; i++) {
-        if (i != 4) {
-          mapInfo.push([
-            mapStats[i].metadata.name,
-            mapStats[i].stats.timePlayed.displayValue,
-            mapStats[i].stats.matchesWon.value,
-            mapStats[i].stats.matchesWon.displayValue,
-            mapStats[i].stats.matchesLost.value,
-            mapStats[i].stats.matchesLost.displayValue,
-            mapStats[i].stats.matchesWinPct.value,
-            mapStats[i].stats.matchesWinPct.displayValue
-          ])
-        }
-      }
+      const userInfo = await this.client.tracker.profile.getUser(riotId)
+      const mapStats = await this.client.tracker.maps.getMaps(riotId)
 
       const author = {
         name: userInfo.name,
@@ -107,35 +87,31 @@ export default class DeathmatchStatus extends Command {
         'Fracture'
       ]
 
-      for (let i = 0; i < mapInfo.length; i++) {
-        const greenSquare = (mapInfo[i][6] / 100) * 16
+      mapStats.forEach((map) => {
+        const greenSquare = (map.winRate.value / 100) * 16
         const redSquare = 16 - greenSquare
         const winRateVisualized =
           '<:greenline:839562756930797598>'.repeat(greenSquare) +
           '<:redline:839562438760071298>'.repeat(redSquare)
 
-        const mapName = mapInfo[i][0]
-        const timePlayed = mapInfo[i][1]
-        const winRate = mapInfo[i][7]
-
-        let mapEmoji = '▫️'
-        if (availableEmojis.includes(mapName))
-          mapEmoji = this.client.utils.getEmoji(assets.mapEmojis, mapName)
+        let mapEmoji = ''
+        if (availableEmojis.includes(map.name))
+          mapEmoji = this.client.utils.getEmoji(assets.mapEmojis, map.name)
 
         mapEmbed.addFields({
           name:
-            mapName +
+            map.name +
             ' ' +
             mapEmoji +
             '    |    ' +
-            timePlayed +
+            map.timePlayed.display +
             '    |    Win Rate: ' +
-            parseInt(winRate).toFixed(0) +
+            parseInt(map.winRate.display).toFixed(0) +
             '%',
           value: winRateVisualized,
           inline: false
         })
-      }
+      })
 
       return await interaction.reply({ embeds: [mapEmbed] })
     } catch (error) {

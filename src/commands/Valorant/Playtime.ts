@@ -1,8 +1,8 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 import Client from '../../Client'
-import API from '../../structures/API'
 import { ErrorEmbed } from '../../components/Embeds'
+
 import Command from '../../structures/Command'
 import Users from '../../structures/database/entities/User'
 
@@ -58,21 +58,10 @@ export default class Playtime extends Command {
         }
       }
 
-      const playerId = riotId.split('#')
-      const user = await API.getUser(playerId[0], playerId[1])
-
-      const userInfo = user.info()
-      const profileStats = userInfo.segments
-
-      let totalTime = 0
-      for (let i = 0; i < profileStats.length; i++) {
-        if (profileStats[i].type === 'playlist')
-          totalTime += profileStats[i].stats.timePlayed.value
-      }
-
-      const hours = Math.floor(totalTime / (1000 * 60 * 60))
-      const minutes = Math.floor(totalTime / (1000 * 60)) - hours * 60
-      const totalPlayTime = hours + 'h ' + minutes + 'm'
+      const userInfo = await this.client.tracker.profile.getUser(riotId)
+      const totalPlayTime = await this.client.tracker.playlist.getTimePlayed(
+        riotId
+      )
 
       const author = {
         name: userInfo.name,

@@ -1,8 +1,8 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 import Client from '../../Client'
-import API from '../../structures/API'
 import { ErrorEmbed } from '../../components/Embeds'
+
 import Command from '../../structures/Command'
 import Users from '../../structures/database/entities/User'
 
@@ -58,13 +58,13 @@ export default class DeathmatchStatus extends Command {
         }
       }
 
-      const playerId = riotId.split('#')
-      const user = await API.getUser(playerId[0], playerId[1])
+      const userInfo = await this.client.tracker.profile.getUser(riotId)
+      const dmStats = await this.client.tracker.playlist.getPlaylist(
+        riotId,
+        'Deathmatch'
+      )
 
-      const userInfo = user.info()
-      const dmStats = userInfo.deathmatch
-
-      const greenSquare = Math.round(dmStats.matchesWinPct.value / 8.33)
+      const greenSquare = Math.round(dmStats.winRate.value / 8.33)
       const redSquare = 12 - greenSquare
 
       const winRate =
@@ -87,48 +87,48 @@ export default class DeathmatchStatus extends Command {
         .addFields(
           {
             name: 'KDR',
-            value: '```yaml\n' + dmStats.kDRatio.displayValue + '\n```',
+            value: '```yaml\n' + dmStats.kdr.display + '\n```',
             inline: true
           },
           {
             name: 'KDA ',
-            value: '```yaml\n' + dmStats.kDARatio.displayValue + '\n```',
+            value: '```yaml\n' + dmStats.kda.display + '\n```',
             inline: true
           },
           {
             name: 'KAD ',
-            value: '```yaml\n' + dmStats.kADRatio.displayValue + '\n```',
+            value: '```yaml\n' + dmStats.kad.display + '\n```',
             inline: true
           },
           {
             name: 'Kills',
-            value: '```yaml\n' + dmStats.kills.displayValue + '\n```',
+            value: '```yaml\n' + dmStats.kills.display + '\n```',
             inline: true
           },
           {
             name: 'Deaths',
-            value: '```yaml\n' + dmStats.deaths.displayValue + '```',
+            value: '```yaml\n' + dmStats.deaths.display + '```',
             inline: true
           },
           {
             name: 'Assists',
-            value: '```yaml\n' + dmStats.assists.displayValue + '\n```',
+            value: '```yaml\n' + dmStats.assists.display + '\n```',
             inline: true
           },
           {
             name: 'Playtime',
-            value: '```yaml\n' + dmStats.timePlayed.displayValue + '\n```',
+            value: '```yaml\n' + dmStats.timePlayed.display + '\n```',
             inline: true
           },
           {
-            name: 'Win Rate - ' + dmStats.matchesWinPct.displayValue,
+            name: 'Win Rate - ' + dmStats.winRate.display,
             value:
               winRate +
               ' ```yaml\n' +
               '    W: ' +
-              dmStats.matchesWon.displayValue +
+              dmStats.matchesWon.display +
               '   |   L: ' +
-              dmStats.matchesLost.displayValue +
+              dmStats.matchesLost.display +
               '\n```',
             inline: false
           }

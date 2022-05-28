@@ -21,11 +21,9 @@
     "dotenv": "^16.0.0",
     "moment": "^2.29.3",
     "mysql2": "^2.3.3",
-    "puppeteer": "^13.7.0",
-    "puppeteer-extra": "^3.2.3",
-    "puppeteer-extra-plugin-stealth": "^2.9.0",
     "reflect-metadata": "^0.1.13",
     "string-width": "^2.1.1",
+    "trn.gg": "^1.0.8",
     "typeorm": "^0.3.6"
   },
   "devDependencies": {

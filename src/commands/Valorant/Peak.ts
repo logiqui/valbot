@@ -1,7 +1,6 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 import Client from '../../Client'
-import API from '../../structures/API'
 import { ErrorEmbed } from '../../components/Embeds'
 
 import assets from '../../../assets.json'
@@ -61,13 +60,16 @@ export default class Playtime extends Command {
         }
       }
 
-      const playerId = riotId.split('#')
-      const user = await API.getUser(playerId[0], playerId[1])
+      const userInfo = await this.client.tracker.profile.getUser(riotId)
+      const compStats = await this.client.tracker.playlist.getPlaylist(
+        riotId,
+        'Competitive'
+      )
 
-      const userInfo = user.info()
-      const compStats = userInfo.ranked
-      const rankName = compStats.peakRank.metadata.tierName
-      const rankEmoji = this.client.utils.getEmoji(assets.rankEmojis, rankName)
+      const rankEmoji = this.client.utils.getEmoji(
+        assets.rankEmojis,
+        compStats.tierName
+      )
 
       const author = {
         name: userInfo.name,
@@ -80,15 +82,15 @@ export default class Playtime extends Command {
       const peakEmbed = new MessageEmbed()
         .setColor('#11806A')
         .setAuthor(author)
-        .setThumbnail(compStats.peakRank.metadata.iconUrl)
+        .setThumbnail(compStats.peakRank.icon)
         .addFields({
           name:
-            compStats.peakRank.displayName +
+            compStats.peakRank.display +
             ' - ' +
-            compStats.peakRank.metadata.actName +
+            compStats.peakRank.actName +
             ' ' +
             rankEmoji,
-          value: '```\n' + rankName + '\n```',
+          value: '```\n' + compStats.currentRank.display + '\n```',
           inline: true
         })
         .setFooter({ text: 'According to Tracker.gg' })

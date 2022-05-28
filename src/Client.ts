@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+import { TrackerAPI } from 'trn.gg'
 import { Client, ClientOptions, Collection } from 'discord.js'
 import { readdirSync } from 'fs'
 import { join } from 'path'
@@ -14,6 +15,7 @@ export default class ValBot extends Client {
   events: Collection<string, Event>
   utils: Utils
   database: DataSource
+  tracker: TrackerAPI
 
   constructor(options: ClientOptions) {
     super(options)
@@ -21,6 +23,7 @@ export default class ValBot extends Client {
     this.commands = new Collection()
     this.events = new Collection()
     this.utils = new Utils()
+    this.tracker = new TrackerAPI()
 
     this.loadCommands()
     this.loadEvents()

@@ -1,8 +1,8 @@
 import { CommandInteraction, MessageEmbed } from 'discord.js'
 
 import Client from '../../Client'
-import API from '../../structures/API'
 import { ErrorEmbed } from '../../components/Embeds'
+
 import Command from '../../structures/Command'
 import Users from '../../structures/database/entities/User'
 
@@ -58,11 +58,10 @@ export default class DeathmatchStatus extends Command {
         }
       }
 
-      const playerId = riotId.split('#')
-      const user = await API.getUser(playerId[0], playerId[1])
-
-      const userInfo = user.info()
-      const weaponStats = userInfo.weapons
+      const userInfo = await this.client.tracker.profile.getUser(riotId)
+      const weaponStats = await this.client.tracker.weapons.getTopWeapons(
+        riotId
+      )
 
       const author = {
         name: userInfo.name,
@@ -72,41 +71,6 @@ export default class DeathmatchStatus extends Command {
         )}/overview`
       }
 
-      const topWeapons = []
-
-      for (let i = 0; i < weaponStats.length; i++) {
-        const weaponName = weaponStats[i].metadata.name
-        const weaponKills = weaponStats[i].stats.kills.displayValue
-        const weaponKillsValue = weaponStats[i].stats.kills.value
-        const weaponDeathsBy = weaponStats[i].stats.deaths.displayValue
-        const weaponHeadshotPct =
-          weaponStats[i].stats.headshotsPercentage.displayValue
-        const weaponDamageRound =
-          weaponStats[i].stats.damagePerRound.displayValue
-        const weaponFirstBloodCount =
-          weaponStats[i].stats.firstBloods.displayValue
-        const weaponLongestKillDistance =
-          weaponStats[i].stats.longestKillDistance.value
-
-        topWeapons.push([
-          weaponName,
-          weaponKills,
-          weaponKillsValue,
-          weaponDeathsBy,
-          weaponHeadshotPct,
-          weaponDamageRound,
-          weaponFirstBloodCount,
-          weaponLongestKillDistance
-        ])
-      }
-
-      topWeapons.sort((a, b) => {
-        return b[2] - a[2]
-      })
-
-      let weaponLength = topWeapons.length
-      if (weaponLength > 5) weaponLength = 5
-
       const weaponEmbed = new MessageEmbed()
         .setColor('#11806A')
         .setAuthor(author)
@@ -114,42 +78,34 @@ export default class DeathmatchStatus extends Command {
         .setDescription(
           '```grey\n      ' +
             '      Top ' +
-            weaponLength +
+            weaponStats.length +
             ' - Weapon Stats' +
             '\n```'
         )
 
-      for (let i = 0; i < weaponLength; i++) {
-        const weaponName = topWeapons[i][0]
-        const weaponKills = topWeapons[i][1]
-        const weaponDeathsBy = topWeapons[i][3]
-        const weaponHeadshot = topWeapons[i][4]
-        const weaponDamage = topWeapons[i][5]
-        const weaponFirstBlood = topWeapons[i][6]
-        const weaponKillDistance = topWeapons[i][7]
-
+      weaponStats.forEach((weapon) => {
         weaponEmbed.addFields({
           name:
-            weaponName +
+            weapon.name +
             '     |     First Bloods: ' +
-            weaponFirstBlood +
+            weapon.firstBloods.display +
             '     |     ' +
             'Longest Kill Dist: ' +
-            weaponKillDistance / 100 +
+            weapon.longestKill.value / 100 +
             ' m',
           value:
             '```yaml\nK:' +
-            weaponKills +
+            weapon.kills.display +
             ' / D:' +
-            weaponDeathsBy +
+            weapon.deathsBy.display +
             ' | HS: ' +
-            weaponHeadshot +
+            weapon.headshot.display +
             ' | DMG/R: ' +
-            weaponDamage +
+            weapon.damagePerRound.display +
             '\n```',
           inline: false
         })
-      }
+      })
 
       return await interaction.reply({ embeds: [weaponEmbed] })
     } catch (error) {
