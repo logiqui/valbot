@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { Interaction } from 'discord.js'
+import { Interaction, MessageEmbed } from 'discord.js'
 
 import Client from '../Client'
 import Event from '../structures/Event'
@@ -48,7 +48,13 @@ export default class InteractionEvent extends Event {
         )}`
       )
 
-      if (command) await command.run(interaction)
+      try {
+        if (command) await command.run(interaction)
+      } catch (error: any) {
+        this.client.utils.log('WARNING', error.message)
+
+        await this.client.utils.quickError(interaction, error.message)
+      }
     }
   }
 }

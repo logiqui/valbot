@@ -82,8 +82,6 @@ export default class AccountStats extends Command {
       )}/overview`
     }
 
-    console.log(author.url)
-
     const embeds: MessageEmbed[] = []
 
     embeds.push(
@@ -283,11 +281,5 @@ export default class AccountStats extends Command {
         })
       }
     })
-    // } catch (error) {
-    //   await this.client.utils.quickError(
-    //     interaction,
-    //     'Jogador não encontrado no banco de dados.'
-    //   )
-    // }
   }
 }
