@@ -7,7 +7,7 @@ export default class Ping extends Command {
   constructor(client: Client) {
     super(client, {
       name: 'ping',
-      description: 'ping server',
+      description: 'Expected BOT Ping',
       roles: ['perms']
     })
   }

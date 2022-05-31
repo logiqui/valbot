@@ -27,7 +27,6 @@ export default class AccountStats extends Command {
   }
 
   run = async (interaction: CommandInteraction) => {
-    // try {
     let riotId = interaction.options.getString('riot-id')
 
     const usersRepository = this.client.database.getRepository(Users)
