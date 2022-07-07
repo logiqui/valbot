@@ -1,4 +1,4 @@
-import { CommandInteraction } from 'discord.js'
+import { Collection, CommandInteraction } from 'discord.js'
 
 import Client from '../../Client'
 import Command from '../../structures/Command'
